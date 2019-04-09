@@ -6,39 +6,41 @@ import top.xionghz.framework.util.CollectionUtil;
 import top.xionghz.framework.util.ReflectionUtil;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
- * 依赖注入助手类
- * @author Xionghz
+ * 依赖注入
+ * @author bj
+ * @version 1.0
  */
 public final class IocHelper {
+
     static {
-        //获取所有的 bean 类与 bean 实例之间的映射关系
-        Map<Class<?>,Object> beanMap = BeanHelper.getBeanMap();
-        if (CollectionUtil.isNotEmpty(beanMap)){
-            //遍历beanMap
-            for(Map.Entry<Class<?>,Object> beanEntry:beanMap.entrySet()){
-                Class<?> beanClass= beanEntry.getKey();
-                Object beanInstance = beanEntry.getValue();
+        //先获取所有的 bean 映射 map
+        Map<Class<?>, Object> beanMap = BeanHelper.getBeanMap();
+        if (CollectionUtil.isNotEmpty(beanMap)) {
+            //遍历，获取类、类的实例
+            for (Map.Entry<Class<?>, Object> objectEntry : beanMap.entrySet()) {
+                Class<?> cls=objectEntry.getKey();
+                Object obj = objectEntry.getValue();
                 //获取类中所有的属性(public、protected、default、private),但不包括继承的属性
-                Field[] beanFields= beanClass.getDeclaredFields();
-                if (ArrayUtil.isNotEmpty(beanFields)) {
-                    //遍历 Field[]
-                    for (Field beanField : beanFields) {
-                        //判断当前 Bean Field 是否带有 Inject(注解)
-                        if (beanField.isAnnotationPresent(Inject.class)) {
-                            //在 BeanMap 中获取 BeanField 对应的实例
-                            Class<?> beanFieldClass = beanField.getType();
-                            Object beanFieldInstance = beanMap.get(beanFieldClass);
+                Field[] fields = cls.getDeclaredFields();
+                if (ArrayUtil.isNotEmpty(fields)) {
+                    for (Field field : fields) {
+                        //判断成员变量是否带有 inject 注解
+                        if (field.isAnnotationPresent(Inject.class)) {
+                            //获取成员的类
+                            Class<?> type = field.getType();
+                            //根据成员的类获取该类的实例
+                            Object beanFieldInstance = beanMap.get(type);
                             if (beanFieldInstance != null) {
-                                //通过反射 初始化 BeanField 的值
-                                ReflectionUtil.setField(beanInstance, beanField, beanFieldInstance);
+                                //赋值
+                                ReflectionUtil.SetField(obj, field, beanFieldInstance);
                             }
                         }
                     }
                 }
-
             }
         }
     }

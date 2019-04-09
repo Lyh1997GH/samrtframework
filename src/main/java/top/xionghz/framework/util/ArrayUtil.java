@@ -6,7 +6,7 @@ import org.apache.commons.lang3.ArrayUtils;
  * 数组工具类
  * @author Xionghz
  */
-public class ArrayUtil {
+public final class ArrayUtil {
 
     public static boolean isNotEmpty(Object[] array){
 

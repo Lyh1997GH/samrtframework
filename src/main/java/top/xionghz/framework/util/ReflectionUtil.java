@@ -2,69 +2,80 @@ package top.xionghz.framework.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
  * 反射工具类
- * ：实例化对象
- * @author Xionghz
- * @since 1.0.0
+ * :实例化对象
+ * @author bj
+ * @version 1.0
  */
 public final class ReflectionUtil {
     private static final Logger LOGGER= LoggerFactory.getLogger(ReflectionUtil.class);
 
     /**
-     * 创建实例
+     * 创建类的实例
      * @param cls
      * @return
      */
     public static Object newInstance(Class<?> cls){
-        Object instance;
+        Object obj;
         try {
-            instance=cls.newInstance();
-        }catch (Exception ex){
-            LOGGER.error("new instance failure",ex);
-            throw new RuntimeException(ex);
+            obj= cls.newInstance();
+        } catch (Exception e) {
+            LOGGER.error("New instance failure",e);
+            throw new RuntimeException(e);
         }
-        return instance;
+        return obj;
+
     }
 
     /**
-     * 创建实例（根据类名）
+     * 根据类名创建类的实例
+     * @param className
+     * @return
      */
-    public static Object newInstance(String className) {
-        Class<?> cls = ClassUtil.loadClass(className);
+    public static Object newInstance(String className){
+        Class<?> cls=ClassUtil.loadClass(className);
         return newInstance(cls);
     }
 
     /**
      * 调用方法
+     * @param obj 类的实例
+     * @param method
+     * @param args
+     * @return
      */
-    public static Object invokeMethod(Object obj, Method method, Object... args) {
+    public static Object invokeMethod(Object obj, Method method,Object... args){
         Object result;
         try {
-            method.setAccessible(true);
-            result = method.invoke(obj, args);
-        } catch (Exception e) {
-            LOGGER.error("invoke method failure", e);
+            result=method.invoke(obj, args);
+        }catch (Exception e){
+            LOGGER.error("Invoke method failure", e);
             throw new RuntimeException(e);
         }
         return result;
+
     }
+
     /**
      * 设置成员变量的值
      * @param obj
      * @param field
-     * @param value
+     * @param value 需要设置的值
      */
-    public static void setField(Object obj, Field field, Object value){
+    public static void SetField(Object obj,Field field,Object value){
         try {
             field.setAccessible(true);
             field.set(obj, value);
-        }catch (Exception  ex){
-            LOGGER.error("set field failure",ex);
-            throw new RuntimeException(ex);
+        } catch (IllegalAccessException e) {
+            LOGGER.error("Set field failure",e);
+            throw new RuntimeException(e);
         }
     }
+
+
 }

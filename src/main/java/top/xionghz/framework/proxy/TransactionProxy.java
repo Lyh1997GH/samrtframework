@@ -10,43 +10,44 @@ import java.lang.reflect.Method;
 /**
  * 事务代理
  * @author bj
- * @since 1.0.0
+ * @version 1.0
  */
-public class TransactionProxy implements Proxy {
+public class TransactionProxy implements Proxy{
     private static final Logger LOGGER = LoggerFactory.getLogger(TransactionProxy.class);
-
-    private static final ThreadLocal<Boolean> FLAG_HOLDER= new ThreadLocal<Boolean>(){
+    //保证同一线程中事物控制相关逻辑只会执行一次
+    private static final ThreadLocal<Boolean> FLAG_HOLDER = new ThreadLocal<Boolean>(){
         @Override
         protected Boolean initialValue() {
             return false;
         }
     };
 
-    public Object doProxy(ProxyChain proxyChain) throws Throwable{
+    @Override
+    public Object doProxy(ProxyChain chain) throws Throwable {
         Object result;
-        boolean flag = FLAG_HOLDER.get();
-        Method method=proxyChain.getTargetMethod();
-        if (!flag && method.isAnnotationPresent(Transaction.class)){
-            FLAG_HOLDER.set(true);
+        Boolean flag = FLAG_HOLDER.get();
+        //获取目标方法
+        Method targetMethod = chain.getTargetMethod();
+//        代理方法是否有 Transaction 注解
+        if (!flag && targetMethod.isAnnotationPresent(Transaction.class)) {
             try {
+                FLAG_HOLDER.set(true);
                 DatabaseHelper.beginTransaction();
-                LOGGER.debug("-------------------begin transaction-------------------");
-                result=proxyChain.doProxyChain();
+                LOGGER.debug("begin transaction");
+                result = chain.doProxyChain();
                 DatabaseHelper.commitTransaction();
-                LOGGER.debug("-------------------commit transaction-------------------");
-
-            }catch (Exception e){
+                LOGGER.debug("commit transaction");
+            } catch (Exception e) {
                 DatabaseHelper.rollbackTransaction();
-                LOGGER.debug("-------------------rollback transaction-------------------");
+                LOGGER.debug("rollback transaction");
                 throw e;
             }finally {
                 FLAG_HOLDER.remove();
             }
-
         }else {
-            result=proxyChain.doProxyChain();
+            result = chain.doProxyChain();
         }
         return result;
-
     }
+
 }

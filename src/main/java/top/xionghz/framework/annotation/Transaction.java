@@ -8,11 +8,10 @@ import java.lang.annotation.Target;
 /**
  * 定义需要事务控制的方法
  * @author bj
- * @since 1.0.0
+ * @version 1.0
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Transaction {
-
 
 }

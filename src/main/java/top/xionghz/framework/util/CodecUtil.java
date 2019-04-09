@@ -9,21 +9,21 @@ import java.net.URLEncoder;
 /**
  * 编码与解码操作工具类
  * @author bj
- * @since 1.0.0
+ * @version 1.0
  */
 public final class CodecUtil {
+
     private static final Logger LOGGER= LoggerFactory.getLogger(CodecUtil.class);
 
     /**
      * 将 URL 编码
      * @param source
-     * @return String
+     * @return
      */
     public static String encodeURL(String source){
         String target;
         try {
-            target= URLEncoder.encode(source, "UTF-8");
-
+            target=URLEncoder.encode(source, "UTF-8");
         }catch (Exception e){
             LOGGER.error("encode url failure!"+e);
             throw new RuntimeException(e);
@@ -36,13 +36,12 @@ public final class CodecUtil {
      * @param source
      * @return String
      */
-    public static String  decodeURL(String source){
+    public static String decodeURL(String source){
         String target;
         try {
             target= URLDecoder.decode(source, "UTF-8");
-
         }catch (Exception e){
-            LOGGER.error("decode url failure!"+e);
+            LOGGER.error("encode url failure!"+e);
             throw new RuntimeException(e);
         }
         return target;

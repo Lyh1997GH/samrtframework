@@ -1,6 +1,4 @@
 package top.xionghz.framework.bean;
-
-
 /**
  * 封装请求信息
  * @author bj
@@ -14,45 +12,45 @@ public class Request {
     /**
      * 请求路径
      */
-    private String requestpath;
+    private String requestPath;
 
-    public Request(String requestMethod, String requestpath) {
+    public Request(String requestMethod, String requestPath) {
         this.requestMethod = requestMethod;
-        this.requestpath = requestpath;
+        this.requestPath = requestPath;
     }
 
     public String getRequestMethod() {
         return requestMethod;
     }
 
-    public String getRequestpath() {
-        return requestpath;
-    }
-
     public void setRequestMethod(String requestMethod) {
         this.requestMethod = requestMethod;
     }
 
-    public void setRequestpath(String requestpath) {
-        this.requestpath = requestpath;
+    public String getRequestPath() {
+        return requestPath;
+    }
+
+    public void setRequestPath(String requestPath) {
+        this.requestPath = requestPath;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (!(object instanceof Request)) return false;
 
-        Request request = (Request) o;
+        Request request = (Request) object;
 
-        if (requestMethod != null ? !requestMethod.equals(request.requestMethod) : request.requestMethod != null)
+        if (getRequestMethod() != null ? !getRequestMethod().equals(request.getRequestMethod()) : request.getRequestMethod() != null)
             return false;
-        return requestpath != null ? requestpath.equals(request.requestpath) : request.requestpath == null;
+        return getRequestPath() != null ? getRequestPath().equals(request.getRequestPath()) : request.getRequestPath() == null;
     }
 
     @Override
     public int hashCode() {
-        int result = requestMethod != null ? requestMethod.hashCode() : 0;
-        result = 31 * result + (requestpath != null ? requestpath.hashCode() : 0);
+        int result = getRequestMethod() != null ? getRequestMethod().hashCode() : 0;
+        result = 31 * result + (getRequestPath() != null ? getRequestPath().hashCode() : 0);
         return result;
     }
 }

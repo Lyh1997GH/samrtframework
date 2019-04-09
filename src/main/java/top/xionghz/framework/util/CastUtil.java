@@ -2,6 +2,8 @@ package top.xionghz.framework.util;
 
 /**
  * 转型操作工具类
+ * @author bj
+ * @version 1.0
  */
 public final class CastUtil {
     /**
@@ -22,7 +24,7 @@ public final class CastUtil {
      * @param obj
      * @return
      */
-    public static  double castDouble(Object obj){
+    public static double castDouble(Object obj){
         return castDouble(obj,0);
     }
     public static double castDouble(Object obj,double defaultValue){

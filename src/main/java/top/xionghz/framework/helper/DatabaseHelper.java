@@ -1,25 +1,36 @@
 package top.xionghz.framework.helper;
 
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import top.xionghz.framework.util.ClassUtil;
-import top.xionghz.framework.util.CollectionUtil;
-
-import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import javax.sql.DataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.ArrayHandler;
+import org.apache.commons.dbutils.handlers.ArrayListHandler;
+import org.apache.commons.dbutils.handlers.BeanHandler;
+import org.apache.commons.dbutils.handlers.BeanListHandler;
+import org.apache.commons.dbutils.handlers.ColumnListHandler;
+import org.apache.commons.dbutils.handlers.MapHandler;
+import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import top.xionghz.framework.util.ClassUtil;
+import top.xionghz.framework.util.CollectionUtil;
 
 /**
- * 数据库操作助手类
+ * 数据库操作助手
  * @author bj
- * @since 1.0.0
+ * @version 1.0
  */
 public final class DatabaseHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseHelper.class);
@@ -36,7 +47,7 @@ public final class DatabaseHelper {
         QUERY_RUNNER = new QueryRunner();
 
         DATA_SOURCE = new BasicDataSource();
-        DATA_SOURCE.setDriverClassName(ConfigHelper.getJdbcDriver());
+        DATA_SOURCE.setDriverClassName(ConfigHelper.getDriver());
         DATA_SOURCE.setUrl(ConfigHelper.getJdbcUrl());
         DATA_SOURCE.setUsername(ConfigHelper.getJdbcUsername());
         DATA_SOURCE.setPassword(ConfigHelper.getJdbcPassword());
@@ -44,7 +55,6 @@ public final class DatabaseHelper {
 
     /**
      * 获取数据源
-     * @return DataSource
      */
     public static DataSource getDataSource() {
         return DATA_SOURCE;
@@ -52,7 +62,6 @@ public final class DatabaseHelper {
 
     /**
      * 获取数据库连接
-     * @return Connection
      */
     public static Connection getConnection() {
         Connection conn = CONNECTION_HOLDER.get();

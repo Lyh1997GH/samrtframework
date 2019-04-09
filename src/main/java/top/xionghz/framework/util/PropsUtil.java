@@ -8,41 +8,36 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-/**
- * 属性文件工具类
- */
 public final class PropsUtil {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(PropsUtil.class);
 
     /**
-     * 加载属性文件
+     * 加载当前属性文件
      * @param fileName
      * @return Properties
      */
     public static Properties loadProps(String fileName){
-        Properties props = null;
+        Properties ps=null;
         InputStream is=null;
-        try{
+        try {
             is=Thread.currentThread().getContextClassLoader().getResourceAsStream(fileName);
-            if (is==null){
-                throw new FileNotFoundException(fileName+"file is not found");
+            if (is == null) {
+                throw new FileNotFoundException(fileName+",file is not found!");
             }
-            props= new Properties();
-            props.load(is);
-
-        }catch(IOException ex){
-            LOGGER.error("load properties file failure",ex);
+            ps=new Properties();
+            ps.load(is);
+        }catch (IOException e){
+            LOGGER.error("Load properties file failure!",e);
         }finally {
-            if (is!=null){
+            if (is != null) {
                 try {
                     is.close();
-                }catch (IOException ex){
-                    LOGGER.error("close input stream failure"+ex);
+                } catch (IOException e) {
+                    LOGGER.error("Load properties file failure!"+e);
                 }
             }
         }
-        return props;
+        return ps;
     }
 
     /**
@@ -53,6 +48,7 @@ public final class PropsUtil {
         return getString(props,key,"");
 
     }
+
     /**
      * 获取字符型属性(可指定默认值)
      * @param props
@@ -60,13 +56,12 @@ public final class PropsUtil {
      * @param defaultValue
      * @return
      */
-    public static String getString(Properties props ,String key,String defaultValue){
-        String value = defaultValue;
-        if (props.containsKey(key)){
+    public static String getString(Properties props,String key,String defaultValue){
+        String value=defaultValue;
+        if (props.containsKey(key)) {
             value=props.getProperty(key);
         }
         return value;
-
     }
 
     /**
@@ -103,5 +98,4 @@ public final class PropsUtil {
         }
         return value;
     }
-
 }

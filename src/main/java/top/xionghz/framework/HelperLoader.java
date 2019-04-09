@@ -6,22 +6,23 @@ import top.xionghz.framework.util.ClassUtil;
 /**
  * 加载相应的 Helper 类
  * @author bj
- * @since 1.0.0
+ * @version  1.0
  */
 public final class HelperLoader {
-
+    /*
+        集中加载
+     */
     public static void init(){
-        Class<?> [] classes ={
-                ClassHelper.class,
-                BeanHelper.class,
-                ControllerHelper.class,
-                IocHelper.class,
-                AopHelper.class
-
-        };
-        for (Class<?> cls:classes) {
-            //为了提高加载类的性能，isInitialized 可设为 false
-            ClassUtil.loadClass(cls.getName(),true);
+        Class<?>[] clsArr=
+                { BeanHelper.class
+                , ClassHelper.class
+                , ConfigHelper.class
+                , ControllerHelper.class
+                , IocHelper.class
+                , AopHelper.class};
+        for (Class<?> cls : clsArr) {
+            ClassUtil.loadClass(cls.getName());
         }
     }
+    
 }

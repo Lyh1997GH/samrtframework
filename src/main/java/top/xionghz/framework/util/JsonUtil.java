@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 /**
  * JSON 工具类
  * @author bj
- * @since 1.0.0
+ * @version  1.0
  */
 public final class JsonUtil {
     private static final Logger LOGGER= LoggerFactory.getLogger(JsonUtil.class);
@@ -18,34 +18,35 @@ public final class JsonUtil {
      * 将 POJO 转换为 JSON
      * @param obj
      * @param <T>
-     * @return String
+     * @return
      */
     public static <T> String toJson(T obj){
-        String json;
+        String jsonStr;
         try {
-            json=OBJECT_MAPPER.writeValueAsString(obj);
+            jsonStr=OBJECT_MAPPER.writeValueAsString(obj);
         }catch (Exception e){
-            LOGGER.error("convert POJO to Json failure!"+e);
+            LOGGER.error("Convert POJO to Json failure!"+e);
             throw new RuntimeException(e);
         }
-        return json;
+        return jsonStr;
     }
 
     /**
      * 将 JSON 转换为 POJO
-     * @param json
-     * @param type
+     * @param jsonStr
+     * @param cls
      * @param <T>
-     * @return <T> T
+     * @return
      */
-    public static <T> T fromJson(String json,Class<T> type){
+    public static <T> T toPOJO(String jsonStr,Class<T> cls){
         T pojo;
         try {
-            pojo=OBJECT_MAPPER.readValue(json, type);
+            pojo=OBJECT_MAPPER.readValue(jsonStr, cls);
         }catch (Exception e){
-            LOGGER.error("convert Json to POJO failure!"+e);
+            LOGGER.error("Convert Json to POJO failure!"+e);
             throw new RuntimeException(e);
         }
         return pojo;
     }
+
 }

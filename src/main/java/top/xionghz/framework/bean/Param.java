@@ -1,14 +1,14 @@
 package top.xionghz.framework.bean;
 
 import top.xionghz.framework.util.CastUtil;
+import top.xionghz.framework.util.CollectionUtil;
 
 import java.util.Map;
 
 /**
  * 请求参数对象
- *
  * @author bj
- * @since 1.0.0
+ * @version 1.0
  */
 public class Param {
     private Map<String,Object> paramMap;
@@ -16,6 +16,7 @@ public class Param {
     public Param(Map<String, Object> paramMap) {
         this.paramMap = paramMap;
     }
+
 
     /**
      * 根据参数名获取 long 型参数
@@ -32,5 +33,13 @@ public class Param {
      */
     public Map<String, Object> getMap() {
         return paramMap;
+    }
+
+    /**
+     * 验证参数是否为空
+     * @return
+     */
+    public Boolean isEmpty(){
+       return CollectionUtil.isEmpty(paramMap);
     }
 }

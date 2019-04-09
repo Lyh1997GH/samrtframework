@@ -3,7 +3,8 @@ package top.xionghz.framework;
 /**
  * 提供相关配置常量
  *
- * @author Xionghz
+ * @author bj
+ * @version 2.0
  */
 public interface ConfigConstant {
     String CONFIG_FILE="smart.properties";

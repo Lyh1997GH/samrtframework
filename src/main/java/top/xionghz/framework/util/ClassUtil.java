@@ -14,10 +14,12 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
- * 类操作工具类
- * @author Xionghz
+ * 类加载器
+ * @author bj
+ * @version 1.0
  */
 public final class ClassUtil {
+
     private static final Logger LOGGER= LoggerFactory.getLogger(ClassUtil.class);
 
     /**
@@ -29,63 +31,64 @@ public final class ClassUtil {
     }
 
     /**
-     * 加载类
-     * 需要提供类名与 是否初始化的标志，
-     * --初始化：是否执行类的静态代码块
-     * @param className
-     * @param isInitialized
-     * @return
-     */
-    public static Class<?> loadClass(String className,boolean isInitialized){
-        Class<?> cls;
-        try {
-            cls=Class.forName(className,isInitialized,getClassLoader());
-        }catch (ClassNotFoundException ex){
-            LOGGER.error("load class failure",ex);
-            throw new RuntimeException(ex);
-        }
-        return cls;
-    }
-    /**
      * 加载类（默认将初始化类）
      */
-    public static Class<?> loadClass(String className) {
+    public static Class<?> loadClass(String className){
         return loadClass(className, true);
+    }
+
+    /**
+     * 加载类
+     *  需要提供类名与 是否初始化的标志
+     * @param className
+     * @param isInit 初始化：是否执行类的静态代码块
+     * @return
+     */
+    public static Class<?> loadClass(String className,boolean isInit){
+        Class<?> cls;
+        try {
+            cls=Class.forName(className,isInit,getClassLoader());
+        } catch (ClassNotFoundException e) {
+            LOGGER.error("load class failure",e);
+            throw new RuntimeException(e);
+        }
+        return cls;
     }
 
     /**
      * 获取指定包名下的所有类
      * 根据包名转换路径，找到.class和jar
-     * @param packageName
+     * @param packName
      * @return
      */
-    public static Set<Class<?>> getClassSet(String packageName){
-        Set<Class<?>> classSet= new HashSet<Class<?>>();
-        try{
-            Enumeration<URL> urls=getClassLoader().getResources(packageName.replace(".","/"));
-            while (urls.hasMoreElements()){
-                URL url = urls.nextElement();
-                if (url!=null){
-                    String protocol =url.getProtocol();
-                    if (protocol.equals("file")){
-                        String packagePath=url.getPath().replaceAll("%20","");
-                        addClass(classSet,packagePath,packageName);
-                    }else if (protocol.equals("jar")){
-                        JarURLConnection jarURLConnection = (JarURLConnection)url.openConnection();
-                        if (jarURLConnection!=null){
-                            JarFile jarFile = jarURLConnection.getJarFile();
-                            if (jarFile!=null){
-                                Enumeration<JarEntry> jarEntrys = jarFile.entries();
-                                while (jarEntrys.hasMoreElements()){
-                                    JarEntry jarEntry = jarEntrys.nextElement();
-                                    String jarEntryName = jarEntry.getName();
-                                    if (jarEntryName.equals(".class")){
+    public static Set<Class<?>> getClassSet(String packName){
+        Set<Class<?>> classSet=new HashSet<Class<?>>();
+        try {
+            Enumeration<URL> urls =getClassLoader().getResources(packName.replace(".","/" ));
+            while (urls.hasMoreElements()) {
+                URL url=urls.nextElement();
+                if (url != null) {
+                    //URL的协议,它的值: HTTP、HTTPS、FTP 和 File
+                   String protocol= url.getProtocol();
+                    if (protocol.equals("file")) {
+                        //如若路径包含空格，java会将它转换为"%20",所以需要替换掉
+                        String packagePath= url.getPath().replaceAll("%20","");
+                        AddClass(classSet,packagePath,packName);
+                    } else if (protocol.equals("jar")) {
+                        JarURLConnection connection= (JarURLConnection) url.openConnection();
+                        if (connection!=null) {
+                            JarFile jarFile=connection.getJarFile();
+                            if (jarFile!=null) {
+                                Enumeration<JarEntry> jarEntries = jarFile.entries();
+                                while (jarEntries.hasMoreElements()) {
+                                    JarEntry jarEntry=jarEntries.nextElement();
+                                    String jarEntryName=jarEntry.getName();
+                                    if (jarEntryName.equals(".class")) {
                                         String className=jarEntryName.substring(0,jarEntryName.lastIndexOf("."))
                                                 .replace("/",".");
                                         doAddClass(classSet,className);
                                     }
                                 }
-
                             }
                         }
                     }
@@ -93,50 +96,56 @@ public final class ClassUtil {
             }
 
         }catch (Exception ex){
-            LOGGER.error("get class set failure",ex);
+            LOGGER.error("Get class set failure",ex);
             throw new RuntimeException(ex);
         }
         return classSet;
     }
 
     /**
-     * isFile()
-     * 测试此抽象路径名表示的文件是否是一个标准文.如果该文件不是一个目录,并且满足其他与系统有关的标准,那么该文件是标准文件.由Java应用程序创建的所有非目录文件一定是标准文件.
-     * 返回:当且仅当此抽象路径名表示的文件存在且是一个标准文件时,返回true;否则返回false;
+     * 加载类，并添加
      * @param classSet
-     * @param packagePath
-     * @param packageName
+     * @param className
      */
-    public static void addClass(Set<Class<?>> classSet,String packagePath,String packageName){
-        File[] files = new File(packagePath).listFiles(new FileFilter() {
+    public static void doAddClass(Set<Class<?>> classSet,String className){
+        Class<?> cls=loadClass(className,false);
+        classSet.add(cls);
+    }
+
+    public static void AddClass(Set<Class<?>> classSet,String packagePath,String packageName){
+        File[] files=new File(packagePath).listFiles(new FileFilter() {
             public boolean accept(File file) {
-                return (file.isFile() && file.getName().endsWith(".class")) || file.isDirectory();//isDirectory()是检查一个对象是否是文件夹
+                //是否是一个java标准文件，或者 是一个文件夹
+                return (file.isFile() && file.getName().endsWith(".class") || file.isDirectory());
             }
         });
-        for (File file:files) {
-            String fileName= file.getName();
-            if (file.isFile()){
+        for (File file : files) {
+            String fileName =file.getName();
+            if (file.isFile()) {
                 String className=packageName.substring(0,fileName.lastIndexOf("."));
-                if (StringUtil.isNotEmpty(packageName)){
+                if (StringUtil.isNotEmpty(packageName)) {
                     className=packagePath+"."+className;
                 }
-                doAddClass(classSet,className);
+                doAddClass(classSet, className);
             }else {
                 String subPackagePath=fileName;
-                if(StringUtil.isNotEmpty(packagePath)){
+                if (StringUtil.isNotEmpty(packagePath)) {
                     subPackagePath=packagePath+"/"+subPackagePath;
                 }
                 String subPackageName =fileName;
                 if (StringUtil.isNotEmpty(packageName)){
                     subPackageName=packageName+"."+subPackageName;
                 }
-                addClass(classSet,subPackagePath,subPackageName);
+                AddClass(classSet,subPackagePath,subPackageName);
             }
+
         }
+
     }
 
-    public static void doAddClass(Set<Class<?>> classSet,String className){
-        Class<?> cls=loadClass(className,false);
-        classSet.add(cls);
-    }
+
+
+
+
+
 }

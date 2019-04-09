@@ -2,24 +2,26 @@ package top.xionghz.framework.helper;
 
 import top.xionghz.framework.ConfigConstant;
 import top.xionghz.framework.util.PropsUtil;
+
 import java.util.Properties;
 
 /**
  * 属性文件助手类
  *
- * @author Xionghz
- * @since 1.0.0
+ * @author bj
+ * @version 1.0
  */
 public final class ConfigHelper {
 
+    //加载属性文件
     private static final Properties CONFIG_PROPS = PropsUtil.loadProps(ConfigConstant.CONFIG_FILE);
 
     /**
      * 获取JDBC 驱动
      * @return
      */
-    public static String getJdbcDriver(){
-        return PropsUtil.getString(CONFIG_PROPS,ConfigConstant.JDBC_DRIVER);
+    public static String getDriver(){
+        return PropsUtil.getString(CONFIG_PROPS, ConfigConstant.JDBC_DRIVER);
     }
     /**
      * 获取JDBC URL
