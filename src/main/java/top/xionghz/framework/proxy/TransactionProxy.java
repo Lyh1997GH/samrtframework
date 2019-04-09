@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import top.xionghz.framework.annotation.Transaction;
 import top.xionghz.framework.helper.DatabaseHelper;
-import top.xionghz.framework.proxy.Proxy;
 
 import java.lang.reflect.Method;
 
